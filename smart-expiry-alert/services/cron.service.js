@@ -43,3 +43,5 @@ exports.startCronJob = () => {
     // Also run it once immediately on startup so we can see the console logs!
     checkExpiries();
 };
+
+exports.checkExpiries = checkExpiries;

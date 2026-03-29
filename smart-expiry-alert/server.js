@@ -28,20 +28,34 @@ app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', '
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 
+// Expose an endpoint to trigger cron jobs manually in Vercel
+app.get('/api/cron/trigger', async (req, res) => {
+    try {
+        await cronService.checkExpiries();
+        res.status(200).json({ message: 'Cron job executed successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to execute cron job' });
+    }
+});
+
 async function startServer() {
     try {
         await ensureDatabaseExists();
         await initializeDatabase();
-        // Start the automated emails job
-        cronService.startCronJob();
         
-        app.listen(PORT, () => {
-            console.log(`Server successfully started on http://localhost:${PORT}`);
-        });
+        // Start the automated emails job ONLY if running locally
+        if (process.env.NODE_ENV !== 'production') {
+            cronService.startCronJob();
+            app.listen(PORT, () => {
+                console.log(`Server successfully started on http://localhost:${PORT}`);
+            });
+        }
     } catch (err) {
         console.error('Failed to initialize or connect to the database', err);
-        process.exit(1);
     }
 }
 
 startServer();
+
+// Vercel Serverless Export
+module.exports = app;

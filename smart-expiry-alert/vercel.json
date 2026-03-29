@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/css/(.*)", "destination": "/public/css/$1" },
+    { "source": "/js/(.*)", "destination": "/public/js/$1" },
+    { "source": "/login", "destination": "/public/auth.html" },
+    { "source": "/register", "destination": "/public/auth.html" },
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/", "destination": "/public/index.html" },
+    { "source": "/(.*)", "destination": "/api/index" }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/trigger",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}
